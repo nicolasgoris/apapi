@@ -1,6 +1,5 @@
 const express = require('express'),
-  http = require('http'),
-  path = require('path');
+  http = require('http');
 
 const indexRouter = require('./routes/index'),
   apiRouter = require('./routes/api');
