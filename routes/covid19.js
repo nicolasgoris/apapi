@@ -153,6 +153,57 @@ let getDefaultSettings = (sLabel, oChartData) => {
   };
 }
 
+let calcCountry = (aRecords) => {
+  let aCountry = [],
+    nTotalCases = 0,
+    nTotalDeaths = 0;
+
+  aRecords.forEach(oRecord => {
+    let oNewRecord = { dateRep: oRecord.dateRep, newCases: oRecord.cases, cumulCases: nTotalCases + oRecord.cases, newDeaths: oRecord.deaths, cumulDeaths: nTotalDeaths + oRecord.deaths };
+    nTotalCases += oRecord.cases;
+    nTotalDeaths += oRecord.deaths;
+    aCountry.push(oNewRecord);
+  });
+
+  return aCountry;
+}
+
+let getDataSets = (aRecords) => {
+  let oDataSets = {
+    newCases: [], cumulCases: [], newDeaths: [], cumulDeaths: []
+  };
+  aRecords.forEach(oRecord => {
+    oDataSets.newCases.push(oRecord.newCases);
+    oDataSets.cumulCases.push(oRecord.cumulCases);
+    oDataSets.newDeaths.push(oRecord.newDeaths);
+    oDataSets.cumulDeaths.push(oRecord.cumulDeaths);
+  });
+  return oDataSets;
+}
+
+let getDefaultLineSettings = (aLabels, oDataSets) => {
+  let oTranslations = { date: "Date", newCases: "New cases", cumulCases: "Cumulative cases", newDeaths: "New deaths", cumulDeaths: "Cumulative deaths" },
+    oChartColors = { newCases: 'rgb(255, 99, 132)', cumulCases: 'rgb(255, 205, 86)', newDeaths: 'rgb(75, 192, 192)', cumulDeaths: 'rgb(54, 162, 235)' },
+    backgroundColor = 'rgba(255, 255, 255, 0)',
+    oSettings = {
+      "type": "line",
+      "data": {
+        "labels": aLabels,
+        "datasets": []
+      }
+    };
+  for (let sProp in oDataSets) {
+    if (oDataSets.hasOwnProperty(sProp)) {
+      oSettings.data.datasets.push({
+        label: oTranslations[sProp],
+        data: oDataSets[sProp],
+        borderColor: oChartColors[sProp],
+        backgroundColor: backgroundColor
+      })
+    }
+  }
+  return oSettings;
+}
 
 router.get('/ecdc', (req, res) => {
   let url = sUrlECDC;
@@ -179,6 +230,22 @@ router.get('/ecdc/country/:country/table', (req, res) => {
         return oRecord.geoId === req.params.country;
       });
       return cleanData(aCountry);
+    }
+    return (async () => res.json(await help.getAPI(url, fn)))()
+  }
+});
+
+router.get('/ecdc/country/:country/graph', (req, res) => {
+  let url = sUrlECDC;
+  if (req.params.country) {
+    let fn = function (oData) {
+      let aCountry = JSON.parse(oData).records.filter(oRecord => {
+        return oRecord.geoId === req.params.country;
+      });
+      let aCleanData = calcCountry(cleanData(aCountry));
+      aLabels = aCleanData.map((oRecord) => { return oRecord.dateRep; }),
+        oDataSets = getDataSets(aCleanData);
+      return getDefaultLineSettings(aLabels, oDataSets)
     }
     return (async () => res.json(await help.getAPI(url, fn)))()
   }
