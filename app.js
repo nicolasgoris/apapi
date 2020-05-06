@@ -3,8 +3,7 @@ const express = require('express'),
   path = require('path');
 
 const indexRouter = require('./routes/index'),
-  apiRouter = require('./routes/api'),
-  covid19Router = require('./routes/covid19');
+  apiRouter = require('./routes/api');
 
 const app = express();
 
@@ -16,8 +15,6 @@ app.use((req, res, next) => {
 app.use('/public', express.static('public'));
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
-// app.use('/api/covid19', covid19Router);
-
 
 app.set('port', process.env.PORT || 3001);
 
