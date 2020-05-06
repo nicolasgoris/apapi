@@ -1,0 +1,31 @@
+{
+  "name": "swapi",
+  "version": "1.0.0",
+  "description": "Server that will serve the Star Wars world as an API.",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "api",
+    "star wars",
+    "star",
+    "wars"
+  ],
+  "author": "Nicolas Goris <nicolas.goris@ap.be>",
+  "license": "MIT",
+  "homepage": "https://github.com/nicolasgoris/swapi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicolasgoris/swapi.git"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "https": "^1.0.0",
+    "load-json-file": "^6.2.0",
+    "swagger-ui-express": "^4.1.4",
+    "yamljs": "^0.3.0",
+    "commander": "^2.19.0",
+    "js-yaml": "^3.12.2",
+    "json-refs": "^3.0.12"
+  }
+}
