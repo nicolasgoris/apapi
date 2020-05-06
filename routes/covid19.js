@@ -71,7 +71,7 @@ let getAllCountryRows = (oData) => {
   })
   if (bFilterZeros) {
     aRows = aRows.filter(oRow => {
-      return oRow.Confirmed && oRow.Deaths && oRow.Recovered;
+      return oRow.Confirmed || oRow.Deaths || oRow.Recovered;
     });
   }
   return aRows;
