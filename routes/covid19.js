@@ -95,6 +95,65 @@ let getCountryRows = (aLabels, oCountry) => {
   return oRows;
 }
 
+let getChartData = (oGlobal) => {
+  let data = {
+    new: {
+      labels: [],
+      values: []
+    },
+    total: {
+      labels: [],
+      values: []
+    }
+  };
+  for (let sProp in oGlobal) {
+    if (oGlobal.hasOwnProperty(sProp)) {
+      if (sProp.slice(0, 3) === "New") {
+        data.new.labels.push(sProp.slice(3));
+        data.new.values.push(oGlobal[sProp]);
+      } else {
+        data.total.labels.push(sProp.slice(5));
+        data.total.values.push(oGlobal[sProp]);
+      }
+    }
+  }
+  return data;
+}
+
+let getDefaultSettings = (sLabel, oChartData) => {
+  return {
+    type: 'horizontalBar',
+    data: {
+      labels: oChartData[sLabel].labels,
+      datasets: [{
+        label: '# of ' + sLabel + ' cases',
+        data: oChartData[sLabel].values,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: false
+          }
+        }]
+      }
+    }
+  };
+}
+
+
 router.get('/ecdc', (req, res) => {
   let url = sUrlECDC;
   return (async () => res.json(JSON.parse(await help.getAPI(url))))()
@@ -143,6 +202,22 @@ router.get('/csse-jhu/summary/table/global', (req, res) => {
 router.get('/csse-jhu/summary/table/countries', (req, res) => {
   let url = sUrlCSSE + '/summary';
   return (async () => res.json(await help.getAPI(url, getAllCountryRows)))();
+});
+
+router.get('/csse-jhu/summary/graph/new', (req, res) => {
+  let url = sUrlCSSE + '/summary',
+    fn = (oData) => {
+      return getDefaultSettings('new', getChartData(JSON.parse(oData).Global));
+    };
+  return (async () => res.json(await help.getAPI(url, fn)))();
+});
+
+router.get('/csse-jhu/summary/graph/total', (req, res) => {
+  let url = sUrlCSSE + '/summary',
+    fn = (oData) => {
+      return getDefaultSettings('total', getChartData(JSON.parse(oData).Global));
+    };
+  return (async () => res.json(await help.getAPI(url, fn)))();
 });
 
 router.get('/csse-jhu/summary/country/:country', (req, res) => {
