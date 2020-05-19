@@ -41,8 +41,7 @@ let getGlobalTableData = (oData) => {
   let data = {
     labels: [],
     rows: []
-  },
-    oGlobal = JSON.parse(oData).Global;
+  }, oGlobal = oData.Global;
   for (let sProp in oGlobal) {
     if (oGlobal.hasOwnProperty(sProp)) {
       let sPrefix = sProp.slice(0, 3) === "New" ? "New" : "Total";
@@ -63,7 +62,7 @@ let getGlobalTableData = (oData) => {
 
 let getAllCountryRows = (oData) => {
   let aRows = [],
-    aCountries = JSON.parse(oData).Countries,
+    aCountries = oData.Countries,
     aLabels = ["Confirmed", "Deaths", "Recovered"],
     bFilterZeros = true;
   aCountries.forEach(oCountry => {
@@ -207,7 +206,7 @@ let getDefaultLineSettings = (aLabels, oDataSets) => {
 
 router.get('/ecdc', (req, res) => {
   let url = sUrlECDC;
-  return (async () => res.json(JSON.parse(await help.getAPI(url))))()
+  return (async () => res.json(JSON.parse(await help.getAPI(url, 'ecdc'))))()
 });
 
 router.get('/ecdc/country/:country', (req, res) => {
@@ -218,7 +217,7 @@ router.get('/ecdc/country/:country', (req, res) => {
         return oRecord.geoId === req.params.country;
       });
     }
-    return (async () => res.json(await help.getAPI(url, fn)))()
+    return (async () => res.json(await help.getAPI(url, 'ecdc', fn)))()
   }
 });
 
@@ -231,7 +230,7 @@ router.get('/ecdc/country/:country/table', (req, res) => {
       });
       return cleanData(aCountry);
     }
-    return (async () => res.json(await help.getAPI(url, fn)))()
+    return (async () => res.json(await help.getAPI(url, 'ecdc', fn)))()
   }
 });
 
@@ -247,49 +246,49 @@ router.get('/ecdc/country/:country/graph', (req, res) => {
         oDataSets = getDataSets(aCleanData);
       return getDefaultLineSettings(aLabels, oDataSets)
     }
-    return (async () => res.json(await help.getAPI(url, fn)))()
+    return (async () => res.json(await help.getAPI(url, 'ecdc', fn)))()
   }
 });
 
 router.get('/csse-jhu', (req, res) => {
   let url = sUrlCSSE;
-  return (async () => res.json(JSON.parse(await help.getAPI(url))))()
+  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
 });
 
 router.get('/csse-jhu/summary', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(JSON.parse(await help.getAPI(url))))()
+  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
 });
 
 router.get('/csse-jhu/summary/table/global', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(await help.getAPI(url, getGlobalTableData)))();
+  return (async () => res.json(await help.getAPI(url, 'csse', getGlobalTableData)))();
 });
 
 router.get('/csse-jhu/summary/table/countries', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(await help.getAPI(url, getAllCountryRows)))();
+  return (async () => res.json(await help.getAPI(url, 'csse', getAllCountryRows)))();
 });
 
 router.get('/csse-jhu/summary/graph/new', (req, res) => {
   let url = sUrlCSSE + '/summary',
     fn = (oData) => {
-      return getDefaultSettings('new', getChartData(JSON.parse(oData).Global));
+      return getDefaultSettings('new', getChartData(oData.Global));
     };
-  return (async () => res.json(await help.getAPI(url, fn)))();
+  return (async () => res.json(await help.getAPI(url, 'csse', fn)))();
 });
 
 router.get('/csse-jhu/summary/graph/total', (req, res) => {
   let url = sUrlCSSE + '/summary',
     fn = (oData) => {
-      return getDefaultSettings('total', getChartData(JSON.parse(oData).Global));
+      return getDefaultSettings('total', getChartData(oData.Global));
     };
-  return (async () => res.json(await help.getAPI(url, fn)))();
+  return (async () => res.json(await help.getAPI(url, 'csse', fn)))();
 });
 
 router.get('/csse-jhu/summary/country/:country', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(JSON.parse(await help.getAPI(url))))()
+  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
 });
 
 module.exports = router;
