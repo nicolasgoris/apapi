@@ -206,14 +206,14 @@ let getDefaultLineSettings = (aLabels, oDataSets) => {
 
 router.get('/ecdc', (req, res) => {
   let url = sUrlECDC;
-  return (async () => res.json(JSON.parse(await help.getAPI(url, 'ecdc'))))()
+  return (async () => res.json(await help.getAPI(url, 'ecdc')))()
 });
 
 router.get('/ecdc/country/:country', (req, res) => {
   let url = sUrlECDC;
   if (req.params.country) {
     let fn = function (oData) {
-      return JSON.parse(oData).records.filter(oRecord => {
+      return oData.records.filter(oRecord => {
         return oRecord.geoId === req.params.country;
       });
     }
@@ -225,7 +225,7 @@ router.get('/ecdc/country/:country/table', (req, res) => {
   let url = sUrlECDC;
   if (req.params.country) {
     let fn = function (oData) {
-      let aCountry = JSON.parse(oData).records.filter(oRecord => {
+      let aCountry = oData.records.filter(oRecord => {
         return oRecord.geoId === req.params.country;
       });
       return cleanData(aCountry);
@@ -238,7 +238,7 @@ router.get('/ecdc/country/:country/graph', (req, res) => {
   let url = sUrlECDC;
   if (req.params.country) {
     let fn = function (oData) {
-      let aCountry = JSON.parse(oData).records.filter(oRecord => {
+      let aCountry = oData.records.filter(oRecord => {
         return oRecord.geoId === req.params.country;
       });
       let aCleanData = calcCountry(cleanData(aCountry));
@@ -252,12 +252,12 @@ router.get('/ecdc/country/:country/graph', (req, res) => {
 
 router.get('/csse-jhu', (req, res) => {
   let url = sUrlCSSE;
-  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
+  return (async () => res.json(await help.getAPI(url, 'csse')))()
 });
 
 router.get('/csse-jhu/summary', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
+  return (async () => res.json(await help.getAPI(url, 'csse')))()
 });
 
 router.get('/csse-jhu/summary/table/global', (req, res) => {
@@ -288,7 +288,7 @@ router.get('/csse-jhu/summary/graph/total', (req, res) => {
 
 router.get('/csse-jhu/summary/country/:country', (req, res) => {
   let url = sUrlCSSE + '/summary';
-  return (async () => res.json(JSON.parse(await help.getAPI(url, 'csse'))))()
+  return (async () => res.json(await help.getAPI(url, 'csse')))()
 });
 
 module.exports = router;
