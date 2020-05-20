@@ -18,6 +18,9 @@ exports.getAPI = (url, type, fn) => new Promise((resolve, reject) => {
           }
         } catch (error) {
           let data = oBackUpData[type];
+          if (!data) {
+            reject();
+          }
           if (fn) {
             resolve(fn(data));
           } else {
